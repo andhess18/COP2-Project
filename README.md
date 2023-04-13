@@ -4,7 +4,7 @@ COP 3003 Neural Network for Image Classification
 
 This project implements a feedforward neural network for image classification using the MNIST dataset.
 
-## What the project does?
+## What the project does
 
 The project trains a small neural network to recognize handwritten digits from the MNIST dataset. It includes a modular design with separate classes for handling data, neural network architecture, and specific layer implementations.
 
