@@ -6,6 +6,8 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <vector>
+#include "NeuralNetwork.h"
+#include "userDrawing.h"
 
 
 using std::vector;
@@ -23,8 +25,10 @@ void drawAt(int x, int y) {
 }
 
 //checks for mouse input and stores completed image in userImages
-void handleMouseEvents(int event, int x, int y, int flags, void* userdata) {   
+void handleMouseEvents(int event, int x, int y, int flags, void* userdata) {
     static bool isDrawing = false;
+    NeuralNetwork* neuralNet = reinterpret_cast<NeuralNetwork*>(userdata);
+
     if (event == cv::EVENT_LBUTTONDOWN) {//if left mousebutton is pressed
         isDrawing = true;
         image = Mat::zeros(500, 500, CV_8UC3); 
@@ -33,17 +37,21 @@ void handleMouseEvents(int event, int x, int y, int flags, void* userdata) {
     else if (event == cv::EVENT_MOUSEMOVE && isDrawing)
         drawAt(x, y);
 
+    //handles processing and prediction of user number once user releases the left mouse button
     else if (event == cv::EVENT_LBUTTONUP && isDrawing) {
         isDrawing = false;
-        currentUserImage = image; 
+        currentUserImage = processUserImage(image);
+        int predictedNumber = neuralNet->predict(currentUserImage);
+        std::cout << "The predicted number is: " << predictedNumber << std::endl;
     }
 
 }
 
-void getuserImage() {
+
+void getuserImage(NeuralNetwork&  neuralNet) {
     image = Mat::zeros(500, 500, CV_8UC3);
     cv::namedWindow("Window");
-    cv::setMouseCallback("Window",handleMouseEvents);
+    cv::setMouseCallback("Window",handleMouseEvents, reinterpret_cast<void*>(&neuralNet));
     cv::imshow("Window", image);
     cv::waitKey(0);
 }
@@ -51,7 +59,7 @@ void getuserImage() {
 
 Mat processUserImage(Mat &curentuserImage) {
     //empty grayscale image(28 by 28 pixels)
-    Mat processedImage(28, 28, CV_8UC1);
+    Mat processedUserImage(28, 28, CV_8UC1);
 
     //converts image to grayscale by exttracting the red channel
     Mat grayscaleImage;
@@ -61,11 +69,12 @@ Mat processUserImage(Mat &curentuserImage) {
     
     
     //resizes the grayscale image to 28x28 pixels
-    cv::resize(grayscaleImage, processedImage, processedImage.size(), 0, 0, cv::INTER_AREA);
+    cv::resize(grayscaleImage, processedUserImage, processedUserImage.size(), 0, 0, cv::INTER_AREA);
 
     //Normalizes the pixel values to a range between 0 and 1
-    processedImage.convertTo(processedImage, CV_32F, 1.0 / 255.0);
+    processedUserImage.convertTo(processedUserImage, CV_64F, 1.0 / 255.0);
+    processedUserImage = processedUserImage.reshape(1, 1);
 
-    return processedImage;
+    return processedUserImage;
 }
 
