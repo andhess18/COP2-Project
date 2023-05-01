@@ -6,7 +6,7 @@ This project implements a feedforward neural network for image classification us
 
 ## What the project does
 
-The project trains a small neural network to recognize handwritten digits from the MNIST dataset. It includes a modular design with separate classes for handling data, neural network architecture, and specific layer implementations.
+The project trains a small neural network to recognize handwritten digits from the MNIST dataset. It includes a modular design with separate classes for handling data, neural network architecture, and specific layer implementations. Once trained, the neural net will try to predict a user drawn image.
 
 ## Project Reason
 
