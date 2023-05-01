@@ -56,6 +56,7 @@ void NeuralNetwork::backPropagation(const vector<Mat>& layerOutputs, const Mat& 
     Mat outputLayerError = Mat::zeros(1, outputNodes, CV_64F);
     for (int i = 0; i < outputNodes; ++i) {
         double outputValue = layerOutputs.back().at<double>(0, i);
+        //Set the targetValue to 1.0 if the current iteration index i is equal to the given label; otherwise, set it to 0.0. This is used for creating the target output values for training the neural network.
         double targetValue = (i == label) ? 1.0 : 0.0;
         double error = outputValue - targetValue;
         outputLayerError.at<double>(0, i) = error;
@@ -75,6 +76,7 @@ void NeuralNetwork::backPropagation(const vector<Mat>& layerOutputs, const Mat& 
         currLayerError = currLayerError.mul(derivative);
         
         // Compute input layer
+        //Set inputLayer to the input image if it is the first iteration(i.e., i == 0);
         Mat inputLayer = (i == 0) ? inputImage : layerOutputs[i - 1];
         Mat currWeightGradient = inputLayer.t() * currLayerError;
 
